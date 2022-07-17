@@ -1,31 +1,28 @@
 #include <stdio.h>
-#include <driver/rtc_io.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#include <esp_log.h>
 
-#include "LGFX_TWATCH_2020.hpp"
+#include "TTGO_TWATCH_2020.hpp"
 
-static LGFX_TWATCH_2020 lcd;
+TTGO_TWATCH_2020 ttgo;
+
+static const char *TAG = "main";
 
 extern "C"
 {
     void app_main()
     {
-        lcd.init();
-        lcd.clearDisplay(TFT_RED);
+        ttgo.init();
         
         static int32_t x,y;
         
         while(1)
         {
-            if (lcd.getTouch(&x, &y))
+            if (ttgo.getLcd().getTouch(&x, &y))
             {
-                lcd.clearDisplay(TFT_BLACK);
-                lcd.fillRect(x-2, y-2, 5, 5, TFT_RED);
-                lcd.setCursor(0,0);
-                lcd.printf("Touch:(%03d,%03d)", x,y);
-
-                
+                ttgo.getLcd().clearDisplay(TFT_BLACK);
+                ttgo.getLcd().fillRect(x-2, y-2, 5, 5, TFT_RED);
+                ttgo.getLcd().setCursor(0,0);
+                ttgo.getLcd().printf("Touch:(%03d,%03d)", x,y);
             }
         }
     }
