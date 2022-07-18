@@ -1,3 +1,14 @@
+/**
+ * @file TTGO_TWATCH_2020.cpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief main class for watch
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include "TTGO_TWATCH_2020.hpp"
 
 #include <time.h>
@@ -11,6 +22,10 @@
 #include "AXP.hpp"
 #include "RTC.hpp"
 
+/**
+ * @brief Watch init method. Will init all additional hardware
+ * 
+ */
 void TTGO_TWATCH_2020::init()
 {
 
@@ -54,6 +69,11 @@ void TTGO_TWATCH_2020::init()
     // xTaskCreatePinnedToCore(backbuffer_task, "Backbuffer", 8192, NULL, 1, NULL, 0);
 }
 
+/**
+ * @brief Will init the flash.
+ * 
+ * @return esp_err_t 
+ */
 esp_err_t TTGO_TWATCH_2020::nvs_init()
 {
     esp_err_t status = nvs_flash_init();

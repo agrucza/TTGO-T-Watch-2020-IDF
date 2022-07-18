@@ -1,9 +1,24 @@
 #pragma once
 
+/**
+ * @file LGFX_TWATCH_2020.hpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief LovyanGFX lcd, backlight and touch initialization of TTGO-T_WATCH-2020
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #define LGFX_USE_V1
 
 #include <LovyanGFX.hpp>
 
+/**
+ * @brief LovyanGFX configuration for TTGO-W-Watch-2020
+ * 
+ */
 class LGFX_TWATCH_2020 : public lgfx::LGFX_Device
 {
     lgfx::Panel_ST7789  _panel_instance;

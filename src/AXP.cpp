@@ -1,21 +1,39 @@
+/**
+ * @file AXP.cpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief This class will provide access to the AXP202 chip
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <esp_log.h>
 #include <i2c_helper.h>
 
 #include "AXP.hpp"
 
+/**
+ * @brief initialization of APX202 I2C connection and init chip
+ * 
+ */
 void AXP::init()
 {
     ESP_LOGI(TAG, "Initializing AXP202");
     axp.read = &i2c_read;
     axp.write = &i2c_write;
     axp.handle = &i2c_port;
-    //axp.handle = NULL;
 
     axp202_init(&axp);
     // AXP202_ioctl(&axp, AXP202_COULOMB_COUNTER_ENABLE, NULL);
     // AXP202_ioctl(&axp, AXP202_COULOMB_COUNTER_CLEAR, NULL);
 }
 
+/**
+ * @brief Load all register values to its access variables
+ * 
+ */
 void AXP::getRegisterValues()
 {
     axp202_read(&axp, AXP202_ACIN_VOLTAGE, &vacin);
@@ -41,6 +59,10 @@ void AXP::getRegisterValues()
     axp202_read(&axp, AXP202_COULOMB_COUNTER, &cbat);
 }
 
+/**
+ * @brief log all register variables
+ * 
+ */
 void AXP::logStats()
 {
     getRegisterValues();

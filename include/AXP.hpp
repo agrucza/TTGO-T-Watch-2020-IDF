@@ -1,5 +1,16 @@
 #pragma once
 
+/**
+ * @file AXP.hpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief This class will provide access to the AXP202 chip
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <axp202.h>
 
 class AXP

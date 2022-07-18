@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief PlatformIO ESP-IDF project for LilyGo TTGO-T-Watch-2020
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <stdio.h>
 #include <esp_log.h>
 
@@ -9,6 +20,10 @@ static const char *TAG = "main";
 
 extern "C"
 {
+    /**
+     * @brief main entry point and startup funtion
+     * 
+     */
     void app_main()
     {
         ttgo.init();

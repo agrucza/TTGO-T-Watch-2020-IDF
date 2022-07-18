@@ -1,5 +1,16 @@
 #pragma once
 
+/**
+ * @file RTC.hpp
+ * @author agrucza (a.grucza@gmx.net)
+ * @brief This class will provide access to the PCF8563 chip
+ * @version 0.1
+ * @date 2022-07-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <i2c_helper.h>
 #include <pcf8563.h>
 
