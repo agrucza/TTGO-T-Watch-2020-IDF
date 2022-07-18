@@ -19,15 +19,21 @@ The project is based on PlatformIO, ESP-IDF and is an attempt to create an easy 
 ## Project status
 | part | details | watch version | library/component | status |
 |---|---|---|---|---|
-| TFT | ST7789V | all | LovyanGFX | working |
-| Touchscreen | FT6336 | all | LovyanGFX | working (touch seems slightly off on screen borders) |
-| PMU | AXP202 | all | axp202 component | working (needs more testing) |
-| RTC | PCF5863 | all | pcf5863 component | working (needs more testing) |
-| PSRAM | 8MB (v2 has 4MB) | all | esp-idf menuconfig | only 4MB available in v1 |
-| Acceleration | BMA423 | all | - | - |
-| Infrared | - | all | - | - |
-| PCM amplifier | MAX98357A | v1 & v3 | - | - |
-| GPS (v2) |Quectel L76K | v2 | - | - |
-| Vibration | IO | v1 & v3 | - | - |
-| Vibration | DRV2605 | v2 | - | - |
-| Button | AXP202 | all | - | - |
+| TFT | ST7789V | all | LovyanGFX | working[^1] |
+| Touchscreen | FT6336 | all | LovyanGFX | working[^2] |
+| PMU | AXP202 | all | axp202 component | working[^3] |
+| RTC | PCF5863 | all | pcf5863 component | working[^3] |
+| PSRAM | 4MB/8MB[^3] | all | esp-idf menuconfig | partially working[^4] |
+| Acceleration | BMA423 | all | - | to be implemented[^5] |
+| Infrared | - | all | - | to be implemented[^5] |
+| PCM amplifier | MAX98357A | v1 & v3 | - | to be implemented[^5] |
+| GPS (v2) |Quectel L76K | v2 | - | to be implemented[^5] |
+| Vibration | IO | v1 & v3 | - | to be implemented[^5] |
+| Vibration | DRV2605 | v2 | - | to be implemented[^5] |
+| Button | AXP202 | all | - | to be implemented[^5] |
+
+[^1]: Feature complete (no known issues)
+[^2]: Touch seems slightly off on screen borders.
+[^3]: Should work but needs more testing and propper functions for better usage.
+[^4]: Watch v1 and v3 have 8MB, v2 has 4MB. During initialization v1 will only detect 4MB of its 8MB.
+[^5]: No efforts of implementation until now. Could be in early stage or no stage at all.
