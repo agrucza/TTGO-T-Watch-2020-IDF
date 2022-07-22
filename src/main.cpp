@@ -10,7 +10,6 @@
  */
 
 #include <stdio.h>
-#include <esp_log.h>
 
 #include "TTGO_TWATCH_2020.hpp"
 

@@ -15,6 +15,8 @@
 
 #include <LovyanGFX.hpp>
 
+#include "device_config.hpp"
+
 /**
  * @brief LovyanGFX configuration for TTGO-W-Watch-2020
  * 
@@ -38,10 +40,10 @@ public:
             cfg.freq_read       = 20000000;
             cfg.spi_3wire       = true;
             cfg.dma_channel     = SPI_DMA_CH_AUTO;
-            cfg.pin_sclk        = 18;
-            cfg.pin_mosi        = 19;
-            cfg.pin_miso        = -1;
-            cfg.pin_dc          = 27;
+            cfg.pin_sclk        = TTGO_TFT_SCLK;
+            cfg.pin_mosi        = TTGO_TFT_MOSI;
+            cfg.pin_miso        = TTGO_TFT_MISO;
+            cfg.pin_dc          = TTGO_TFT_DC;
 
             _bus_instance.config(cfg);
             _panel_instance.setBus(&_bus_instance);
@@ -50,9 +52,9 @@ public:
             // Display panel control
             auto cfg            = _panel_instance.config();
 
-            cfg.pin_cs          =     5;
-            cfg.pin_rst         =    -1;
-            cfg.pin_busy        =    -1;
+            cfg.pin_cs          = TTGO_TFT_CS;
+            cfg.pin_rst         = -1;
+            cfg.pin_busy        = -1;
             // General init values, if unknown comment out or try
             cfg.panel_width     =   240;
             cfg.panel_height    =   240;
@@ -72,7 +74,7 @@ public:
         {
             // Backlight control
             auto cfg            = _light_instance.config();
-            cfg.pin_bl          =    12;
+            cfg.pin_bl          = TTGO_TFT_BL;
             cfg.invert          = false;
             cfg.freq            =  1200;
             cfg.pwm_channel     =     7;
