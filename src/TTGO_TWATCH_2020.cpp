@@ -18,10 +18,6 @@
 #include <i2c_helper.h>
 #include <axp202.h>
 
-#include "LGFX_TWATCH_2020.hpp"
-#include "AXP.hpp"
-#include "RTC.hpp"
-
 /**
  * @brief Watch init method. Will init all additional hardware
  * 
@@ -40,6 +36,9 @@ void TTGO_TWATCH_2020::init()
 
     // init RTC
     rtc.init();
+
+    // init Events
+    event.init();
 
     // init LovyanGFX
     lcd.init();

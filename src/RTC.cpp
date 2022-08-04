@@ -86,10 +86,10 @@ void RTC::setRTCTime(int year, int month, int day, int hour, int minute, int sec
  * If no dayOfWeek or dayOfMonth is set the alarm will be set for each day.
  * If set the alarm will be for this day of week or day of month.
  * 
- * @param hour 
- * @param minute 
- * @param dayOfWeek 
- * @param dayOfMonth 
+ * @param hour
+ * @param minute
+ * @param dayOfWeek
+ * @param dayOfMonth
  */
 void RTC::setRTCAlarm(int hour, int minute, int dayOfWeek = PCF8563_ALARM_NONE, int dayOfMonth = PCF8563_ALARM_NONE)
 {

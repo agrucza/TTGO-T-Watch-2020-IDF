@@ -11,7 +11,9 @@
  * 
  */
 
+#include <array>
 #include <axp202.h>
+#include <i2c_helper.h>
 
 #define _BV(b)                          (1ULL << b)
 #define REG_IS_ENABLED(reg, channel)    (bool)(reg & _BV(channel))
@@ -30,14 +32,21 @@ class AXP
     uint8_t                 power, charge;
 public:
     static axp202_t         axp;
-    static xQueueHandle eventQueue;
+    static xQueueHandle     eventQueue;
+    static bool             sleep;
+    /*
+     * i know this is quite ugly to produce a multi dim array like this
+     * it would be better to introduce an new multi dim array template in the future
+     */
+    static std::array<std::array<void(*)(), 8>, AXP202_IRQ_REG_NUM> irqFunctions;
+
     AXP(void){}
     void                    init();
-    axp202_t                getAXP(){ return axp; }
+    static axp202_t         getAXP(){ return axp; }
 
-    static void IRAM_ATTR   isrHandler(void *arg);
     static void             irqTask(void* arg);
     static void             clearIRQ(void);
+    static bool             setIrqFunction(uint8_t irqReg, uint8_t irqFlag, void(*newIrqFunction)());
 
     void                    getRegisterValues();
     void                    logStats();

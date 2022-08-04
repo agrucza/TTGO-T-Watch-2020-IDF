@@ -9,15 +9,19 @@
  * 
  */
 
+#include <math.h>
+#include <esp_sleep.h>
 #include <esp_log.h>
 #include <i2c_helper.h>
 
 #include "AXP.hpp"
+#include "Event.hpp"
 
 #include "device_config.hpp"
 
-axp202_t        AXP::axp;
-xQueueHandle    AXP::eventQueue = NULL;
+axp202_t            AXP::axp;
+bool                AXP::sleep      = false;
+std::array<std::array<void(*)(), 8>, AXP202_IRQ_REG_NUM> AXP::irqFunctions;
 
 /**
  * @brief initialization of APX202 I2C connection and init chip
@@ -26,6 +30,7 @@ xQueueHandle    AXP::eventQueue = NULL;
 void AXP::init()
 {
     ESP_LOGI(TAG, "Initializing AXP202");
+
     axp.read = &i2c_read;
     axp.write = &i2c_write;
     axp.handle = &i2c_port;
@@ -38,6 +43,7 @@ void AXP::init()
     }
 
     // set all needed IRQs on AXP202
+    // i guess we wont need all of them so this will be adjusted later
     uint8_t irqVal = 0xFF;
     axp.write(axp.handle, AXP202_ADDRESS, AXP202_ENABLE_CONTROL_1, &irqVal, 1);
     axp.write(axp.handle, AXP202_ADDRESS, AXP202_ENABLE_CONTROL_2, &irqVal, 1);
@@ -60,18 +66,6 @@ void AXP::init()
     // disable pull-up mode
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
-    
-    //change gpio intrrupt type for one pin
-    //gpio_set_intr_type(TTGO_AXP202_INT, GPIO_INTR_ANYEDGE);
-
-    //create a queue to handle gpio event from isr
-    AXP::eventQueue = xQueueCreate(10, sizeof(uint32_t));
-
-    xTaskCreate(AXP::irqTask, "axpIrqTask", 2048, NULL, 10, NULL);
-    //install gpio isr service
-    gpio_install_isr_service(0);
-    //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(TTGO_AXP202_INT, AXP::isrHandler, (void *) TTGO_AXP202_INT);
 
     // reset all current IRQ flags to reset IRQ gpio to be in normat state
     clearIRQ();
@@ -79,15 +73,85 @@ void AXP::init()
 
 void AXP::irqTask(void* arg)
 {
-    uint32_t io_num;
+
+    const char  *TAG        = "AXP IRQ TASK";
+    uint32_t    io_num;
+
     for(;;) {
-        if(xQueueReceive(AXP::eventQueue, &io_num, 0)) {
-            ESP_LOGD("AXP IRQ Task Handler", "GPIO[%d] intr, val: %d\n", io_num, gpio_get_level((gpio_num_t)io_num));
-            AXP::clearIRQ();
+        if(xQueueReceive(Event::axpEventQueue, &io_num, 0)) {
+            // It seems we need to add a small delay here as otherwise some register values will get lost.
+            //
+            // I checked with 0 & 100ms delay but i could only get the "PEK falling edge" state
+            // but no "PEK short press" state resulting in a constant negative GPIO as i did not touch
+            // the missing register value.
+            //
+            // Probably the loop over the registers is inefficient but with a 150ms delay it seems to
+            // work fine so far.
+            vTaskDelay(150 / portTICK_PERIOD_MS);
+
+            uint8_t reg;
+            
+            // read all IRQ status registers
+            for (int irqStatusIndex = 0; irqStatusIndex < AXP202_IRQ_REG_NUM; irqStatusIndex++) {
+                uint8_t regReset = 0x00;
+                axp.read(axp.handle, AXP202_ADDRESS, AXP202_IRQ_STATUS_1 + irqStatusIndex, &reg, 1);
+
+                // do nothing if register has no bit set (no IRQ)
+                if(reg != 0x00)
+                {
+                    for(int irqStatusFlag = 0; irqStatusFlag<8; irqStatusFlag++)
+                    {
+                        // check if irq is not set, if so go to next flag
+                        if(!(reg & (irqStatusFlag>0?(0x01 << irqStatusFlag):0x01)))
+                        {
+                            continue;
+                        }
+                        
+                        ESP_LOGD(
+                            TAG,
+                            "[reg:0x%x][regValue:0x%x][bit:%i] Got IRQ",
+                            AXP202_IRQ_STATUS_1 + irqStatusIndex,
+                            reg,
+                            irqStatusFlag
+                        );
+
+                        if(irqFunctions[irqStatusIndex][irqStatusFlag])
+                        {
+                            // Callback function should be set so execute the function.
+                            irqFunctions[irqStatusIndex][irqStatusFlag]();
+                        }
+
+                        // Collect the status registers value for the found IRQ flag.
+                        regReset |= (0x01 << irqStatusFlag);
+                    }
+                    // Write
+                    axp.write(axp.handle, AXP202_ADDRESS, AXP202_IRQ_STATUS_1 + irqStatusIndex, &regReset, 1);
+                }
+            }
         }
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
+
+bool AXP::setIrqFunction(uint8_t irqReg, uint8_t irqFlag, void(*newIrqFunction)())
+{
+    const char *TAG = "AXP setIrqFunction";
+    
+    // transform irqReg and irqFlag to the index values of the array
+    // e.g.: AXP202_IRQ_STATUS_1 (0x48) - AXP202_IRQ_STATUS_1 (0x48)
+    // will result in 0 (first index)
+    irqReg = irqReg - AXP202_IRQ_STATUS_1;
+    irqFlag = log2(irqFlag);
+    ESP_LOGD(TAG, "Setting IRQ Function to [irqReg:0x%x][irqFlag:%u]", AXP202_IRQ_STATUS_1 + irqReg, irqFlag);
+    if(irqReg < 0 && irqReg > AXP202_IRQ_REG_NUM)
+    {
+        ESP_LOGD(TAG, "Error while setting IRQ function: IRQ Register out of bounce (0x%x)", AXP202_IRQ_STATUS_1 + irqReg);
+        return false;
+    }
+    AXP::irqFunctions[irqReg][irqFlag] = newIrqFunction;
+    return true;
+}
+
 
 /**
  * @brief Load all register values to its access variables
@@ -136,14 +200,7 @@ void AXP::logStats()
     );
 
     ESP_LOGD(TAG, "power: 0x%02x charge: 0x%02x", power, charge);
-
     ESP_LOGD(TAG, "cbat: %.2fmAh", cbat);
-}
-
-void IRAM_ATTR AXP::isrHandler(void *arg)
-{
-    uint32_t gpio_num = (uint32_t) arg;
-    xQueueSendFromISR(AXP::eventQueue, &gpio_num, NULL);
 }
 
 void AXP::clearIRQ(void)

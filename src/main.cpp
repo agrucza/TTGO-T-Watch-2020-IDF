@@ -36,8 +36,10 @@ extern "C"
                 ttgo.getLcd().clearDisplay(TFT_BLACK);
                 ttgo.getLcd().fillRect(x-2, y-2, 5, 5, TFT_RED);
                 ttgo.getLcd().setCursor(0,0);
-                ttgo.getLcd().printf("Touch:(%03d,%03d)", x,y);
+                ttgo.getLcd().printf("Touch:(%03d,%03d)", x, y);
             }
+            
+            vTaskDelay(50 / portTICK_PERIOD_MS);
         }
     }
 }
