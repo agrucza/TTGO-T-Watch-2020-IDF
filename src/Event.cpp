@@ -13,12 +13,14 @@
 
 #include "Event.hpp"
 #include "AXP.hpp"
+#include "Buzzer.hpp"
 #include "device_config.hpp"
 
 TTGO_TWATCH_2020    *Event::ttgo            = nullptr;
 bool                Event::isrInstalled     = false;
 xQueueHandle        Event::axpEventQueue    = nullptr;
 xQueueHandle        Event::rtcEventQueue    = nullptr;
+xQueueHandle        Event::buzzerEventQueue = nullptr;
 const uint64_t      Event::sleepTimer       = 2000000;
 
 void Event::init(TTGO_TWATCH_2020* _ttgo)
@@ -32,11 +34,15 @@ void Event::init(TTGO_TWATCH_2020* _ttgo)
     
     // setting up AXP queue and ISR handler
     Event::axpEventQueue = xQueueCreate(10, sizeof(uint32_t));
-    xTaskCreatePinnedToCore(AXP::irqTask, "axpIrqTask", 4096, NULL, tskIDLE_PRIORITY, NULL, 1);
+    xTaskCreatePinnedToCore(AXP::irqTask, "axpIrqTask", 4096, NULL, NULL, NULL, 1);
     gpio_isr_handler_add(TTGO_AXP202_INT, Event::axpISRHandler, (void *) TTGO_AXP202_INT);
 
     // setup AXP interrupt handler
     AXP::setIrqFunction(AXP202_IRQ_STATUS_3, AXP202_IRQ_STATUS_3_PEKSHORT, &Event::standby);
+
+    // setup buzzer
+    Event::buzzerEventQueue = xQueueCreate(5, sizeof(Buzzer::buzzer_t));
+    xTaskCreatePinnedToCore(Buzzer::task, "buzzerTask", 1024, NULL, NULL, NULL, 1);
 }
 
 void IRAM_ATTR Event::axpISRHandler(void *arg)

@@ -37,6 +37,8 @@ void TTGO_TWATCH_2020::init()
     // init RTC
     rtc.init();
 
+    buzzer.init();
+
     // init LovyanGFX
     lcd.init();
     lcd.clearDisplay(TFT_RED);

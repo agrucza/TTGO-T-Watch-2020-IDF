@@ -43,11 +43,9 @@ public:
     AXP(void){}
     void                    init();
     static axp202_t         getAXP(){ return axp; }
-
     static void             irqTask(void* arg);
     static void             clearIRQ(void);
     static bool             setIrqFunction(uint8_t irqReg, uint8_t irqFlag, void(*newIrqFunction)());
-
     void                    getRegisterValues();
     void                    logStats();
 };

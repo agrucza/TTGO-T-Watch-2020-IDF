@@ -29,11 +29,12 @@ public:
     static bool                 isrInstalled;
     static xQueueHandle         axpEventQueue;
     static xQueueHandle         rtcEventQueue;
+    static xQueueHandle         buzzerEventQueue;
     static const uint64_t       sleepTimer;
 
+    Event(void){}
     static void                 init(TTGO_TWATCH_2020* _ttgo);
     static void IRAM_ATTR       axpISRHandler(void *arg);
     static void                 wakeupReason();
-
-    static void standby();
+    static void                 standby();
 };

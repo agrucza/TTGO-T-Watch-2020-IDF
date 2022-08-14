@@ -16,6 +16,7 @@
 
 #include "AXP.hpp"
 #include "RTC.hpp"
+#include "Buzzer.hpp"
 
 /**
  * @brief Basic init class for TTGO-T-Watch-2020
@@ -29,9 +30,11 @@ class TTGO_TWATCH_2020
     i2c_port_t          i2c_port    = I2C_NUM_0;
     AXP                 axp;
     RTC                 rtc;
+    Buzzer              buzzer;
 public:
     TTGO_TWATCH_2020(void){}
-    void init();
-    LGFX_TWATCH_2020 getLcd(){ return lcd; }
-    esp_err_t nvs_init();
+    void                init();
+    LGFX_TWATCH_2020    getLcd(){ return lcd; }
+    Buzzer              getBuzzer(){ return buzzer; }
+    esp_err_t           nvs_init();
 };

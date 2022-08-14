@@ -37,6 +37,7 @@ extern "C"
         {
             if (ttgo.getLcd().getTouch(&x, &y))
             {
+                ttgo.getBuzzer().buzz();
                 ttgo.getLcd().clearDisplay(TFT_BLACK);
                 ttgo.getLcd().fillRect(x-2, y-2, 5, 5, TFT_RED);
                 ttgo.getLcd().setCursor(0,0);

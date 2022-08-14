@@ -48,7 +48,7 @@
 
 
 #if defined(TTGO_TWATCH_2020_V1) || defined(TTGO_TWATCH_2020_V3)
-#define TTGO_MOTOR                   4
+#define TTGO_MOTOR       (gpio_num_t)4
 #define TTGO_I2S_BCK                26
 #define TTGO_I2S_WS                 25
 #define TTGO_I2S_DOUT               33

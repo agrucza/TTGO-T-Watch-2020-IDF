@@ -30,7 +30,7 @@ The project is based on PlatformIO, ESP-IDF and is an attempt to create an easy 
 | GPS (v2) |Quectel L76K | v2 | - | to be implemented[^5] |
 | Vibration | IO | v1 & v3 | - | to be implemented[^5] |
 | Vibration | DRV2605 | v2 | - | to be implemented[^5] |
-| Button | AXP202 | all | - | to be implemented[^5] |
+| Button | AXP202 | all | - | working[^3] |
 
 [^1]: Feature complete (no known issues)
 [^2]: Touch seems slightly off on screen borders.
