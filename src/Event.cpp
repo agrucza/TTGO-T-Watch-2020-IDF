@@ -34,7 +34,7 @@ void Event::init(TTGO_TWATCH_2020* _ttgo)
     
     // setting up AXP queue and ISR handler
     Event::axpEventQueue = xQueueCreate(10, sizeof(uint32_t));
-    xTaskCreatePinnedToCore(AXP::irqTask, "axpIrqTask", 4096, NULL, NULL, NULL, 1);
+    xTaskCreatePinnedToCore(AXP::irqTask, "axpIrqTask", 4096, NULL, tskIDLE_PRIORITY, NULL, 1);
     gpio_isr_handler_add(TTGO_AXP202_INT, Event::axpISRHandler, (void *) TTGO_AXP202_INT);
 
     // setup AXP interrupt handler
@@ -42,7 +42,7 @@ void Event::init(TTGO_TWATCH_2020* _ttgo)
 
     // setup buzzer
     Event::buzzerEventQueue = xQueueCreate(5, sizeof(Buzzer::buzzer_t));
-    xTaskCreatePinnedToCore(Buzzer::task, "buzzerTask", 1024, NULL, NULL, NULL, 1);
+    xTaskCreatePinnedToCore(Buzzer::task, "buzzerTask", 1024, NULL, tskIDLE_PRIORITY, NULL, 1);
 }
 
 void IRAM_ATTR Event::axpISRHandler(void *arg)

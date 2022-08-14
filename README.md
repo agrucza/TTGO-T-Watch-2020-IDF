@@ -28,7 +28,7 @@ The project is based on PlatformIO, ESP-IDF and is an attempt to create an easy 
 | Infrared | - | all | - | to be implemented[^5] |
 | PCM amplifier | MAX98357A | v1 & v3 | - | to be implemented[^5] |
 | GPS (v2) |Quectel L76K | v2 | - | to be implemented[^5] |
-| Vibration | IO | v1 & v3 | - | to be implemented[^5] |
+| Vibration | IO | v1 & v3 | - | working[^3] |
 | Vibration | DRV2605 | v2 | - | to be implemented[^5] |
 | Button | AXP202 | all | - | working[^3] |
 
