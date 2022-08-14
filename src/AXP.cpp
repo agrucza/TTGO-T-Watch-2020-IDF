@@ -92,7 +92,8 @@ void AXP::irqTask(void* arg)
             uint8_t reg;
             
             // read all IRQ status registers
-            for (int irqStatusIndex = 0; irqStatusIndex < AXP202_IRQ_REG_NUM; irqStatusIndex++) {
+            for (uint8_t irqStatusIndex = 0; irqStatusIndex < AXP202_IRQ_REG_NUM; irqStatusIndex++) {
+                bool statusFlagExecuteFunction[8] = {false, false, false, false, false, false, false, false};
                 uint8_t regReset = 0x00;
                 axp.read(axp.handle, AXP202_ADDRESS, AXP202_IRQ_STATUS_1 + irqStatusIndex, &reg, 1);
 
@@ -118,7 +119,7 @@ void AXP::irqTask(void* arg)
                         if(irqFunctions[irqStatusIndex][irqStatusFlag])
                         {
                             // Callback function should be set so execute the function.
-                            irqFunctions[irqStatusIndex][irqStatusFlag]();
+                            statusFlagExecuteFunction[irqStatusFlag] = true;
                         }
 
                         // Collect the status registers value for the found IRQ flag.
@@ -126,6 +127,13 @@ void AXP::irqTask(void* arg)
                     }
                     // Write
                     axp.write(axp.handle, AXP202_ADDRESS, AXP202_IRQ_STATUS_1 + irqStatusIndex, &regReset, 1);
+                    for(int irqStatusFlag = 0; irqStatusFlag<8; irqStatusFlag++)
+                    {
+                        if(statusFlagExecuteFunction[irqStatusFlag])
+                        {
+                            irqFunctions[irqStatusIndex][irqStatusFlag]();
+                        }
+                    }
                 }
             }
         }

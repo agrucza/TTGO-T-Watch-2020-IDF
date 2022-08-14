@@ -12,8 +12,10 @@
 #include <stdio.h>
 
 #include "TTGO_TWATCH_2020.hpp"
+#include "Event.hpp"
 
 TTGO_TWATCH_2020 ttgo;
+Event event;
 
 static const char *TAG = "main";
 
@@ -26,6 +28,8 @@ extern "C"
     void app_main()
     {
         ttgo.init();
+        event.init(&ttgo);
+        event.wakeupReason();
         
         static int32_t x,y;
         
